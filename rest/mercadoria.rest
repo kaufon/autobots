@@ -1,0 +1,51 @@
+### create
+POST http://localhost:8080/mercadoria/1/cadastro
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "id": 1,
+  "validade": "2025-01-01",
+  "fabricao": "2025-01-01",
+  "cadastro": "2025-01-01",
+  "nome": "Óleo de motor",
+  "quantidade": 10,
+  "valor": 100,
+  "descricao": "Óleo de motor 10W40"
+}
+
+### list
+GET http://localhost:8080/mercadoria/listar
+
+### get
+GET http://localhost:8080/mercadoria/1
+
+### update
+PUT http://localhost:8080/mercadoria/atualizar/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "validade": "2045-01-01",
+  "fabricao": "2012-01-01",
+  "cadastro": "2025-01-01",
+  "nome": "Cera de motor",
+  "quantidade": 20,
+  "valor": 200,
+  "descricao": "Cera de motor 40W10"
+}
+
+### delete
+DELETE http://localhost:8080/mercadoria/deletar/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "validade": "2045-01-01",
+  "fabricao": "2012-01-01",
+  "cadastro": "2025-01-01",
+  "nome": "Cera de motor",
+  "quantidade": 20,
+  "valor": 200,
+  "descricao": "Cera de motor 40W10"
+}

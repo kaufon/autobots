@@ -1,0 +1,131 @@
+# @name login 
+POST http://localhost:8080/autenticacao/login
+Content-Type: application/json
+
+{
+  "nomeUsuario": "admin-usuario",
+  "senha": "123456"
+}
+
+
+
+### Create client
+POST http://localhost:8080/usuario/1/cadastro
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "nome": "João da Silva",
+  "nomeSocial": "João da Silva",
+  "perfil": "CLIENTE",
+  "credencial":{ 
+    "nomeUsuario": "cliente-usuario-1",
+    "senha": "123456",
+    "criacao": "2025-01-01"
+  },
+  "documentos": [
+    {
+      "tipo": "CPF",
+      "dataEmissao": "2020-01-01",
+      "numero": "3124567891"
+    }
+  ],
+  "endereco": {
+    "estado": "SP",
+    "cidade": "São Paulo",
+    "bairro": "Jardim Paulista",
+    "rua": "Rua das Flores",
+    "numero": "123",
+    "codigoPostal": "04101-300",
+    "informacoesAdicionais": "Apto 101"
+  },
+  "telefones": [
+    {
+      "ddd": "11",
+      "numero": "99999-9999"
+    }
+  ],
+  "inativo": false
+}
+
+### Obter todos os clientes
+GET http://localhost:8080/usuario/1/listar
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+### Get user
+GET http://localhost:8080/usuario/2
+Authorization: Bearer {{JWT}}
+
+### Update user
+PUT http://localhost:8080/usuario/atualizar/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nome": "Rain dos Santos",
+  "nomeSocial": "Rainizinho",
+  "dataNascimento": "1990-01-01",
+  "dataCadastro": "2025-01-01",
+  "documentos": [
+    {
+      "id": 1,
+      "tipo": "CPF",
+      "numero": "1234567890",
+      "dataEmissao": "2020-01-01"
+    }
+  ],
+  "endereco": {
+    "id": 1,
+    "estado": "RJ",
+    "cidade": "São Paulo",
+    "bairro": "Jardim Paulista",
+    "rua": "Rua das Flores",
+    "numero": "123",
+    "codigoPostal": "04101-300",
+    "informacoesAdicionais": "Apto 101"
+  },
+  "telefones": [
+    {
+      "id": 1,
+      "ddd": "11",
+      "numero": "99999-9999"
+    }
+  ]
+}
+
+### Delete
+DELETE http://localhost:8080/cliente/excluir
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nome": "Raim dos Santos",
+  "nomeSocial": "Raimizinho",
+  "dataNascimento": "1990-01-01",
+  "dataCadastro": "2025-01-01",
+  "documentos": [
+    {
+      "id": 1,
+      "tipo": "CPF",
+      "numero": "1234567890"
+    }
+  ],
+  "cliente": {
+    "id": 1,
+    "estado": "SP",
+    "cidade": "São Paulo",
+    "bairro": "Jardim Paulista",
+    "rua": "Rua das Flores",
+    "numero": "123",
+    "codigoPostal": "04101-300",
+    "informacoesAdicionais": "Apto 101"
+  },
+  "telefones": [
+    {
+      "id": 1,
+      "ddd": "11",
+      "numero": "99999-9999"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+### Cadastrar um novo serviço
+POST http://localhost:8080/servico/1/cadastro
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
+{
+  "id": 1,
+  "nome": "Troca de óleo",
+  "valor": 100,
+  "descricao": "Troca de óleo do motor"
+}
+
+### Obter todos os serviços
+GET http://localhost:8080/servico/listar
+### Obter um serviço específico
+GET http://localhost:8080/servico/1
+
+### Atualizar um serviço
+PUT http://localhost:8080/servico/atualizar/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "nome": "Alinhamento e balanceamento",
+  "valor": 150,
+  "descricao": "Serviço de alinhamento e balanceamento das rodas"
+}
+
+### Excluir um servico
+DELETE http://localhost:8080/servico/deletar/1
+Content-Type: application/json
+
+{
+  "id": 1,
+  "validade": "2045-01-01",
+  "fabricao": "2012-01-01",
+  "cadastro": "2025-01-01",
+  "nome": "Cera de motor",
+  "quantidade": 20,
+  "valor": 200,
+  "descricao": "Cera de motor 40W10"
+}
