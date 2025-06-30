@@ -1,6 +1,7 @@
 package com.autobots.automanager.controles;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,9 @@ public class AutenticacaoControlador {
     private String senha;
   }
 
+  @Value("${empresa.service.url}")
+  private String empresaServiceUrl;
+
   @Data
   @AllArgsConstructor
   @NoArgsConstructor
@@ -35,11 +39,11 @@ public class AutenticacaoControlador {
 
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody Credencial credencial) {
-    String urlMicroservico = "http://localhost:8081/autenticacao/login";
+    String url = empresaServiceUrl + "/autenticacao/login";
 
     try {
       ResponseEntity<Jwt> respostaMicroservico = restTemplate.postForEntity(
-          urlMicroservico,
+          url,
           credencial,
           Jwt.class);
 
