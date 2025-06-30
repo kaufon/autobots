@@ -15,14 +15,19 @@ Authorization: Bearer {{JWT}}
 }
 
 ### list
-GET http://localhost:8080/mercadoria/listar
+GET http://localhost:8080/mercadoria/1/listar
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 ### get
-GET http://localhost:8080/mercadoria/1
+GET http://localhost:8080/mercadoria/1/1
+Content-Type: application/json 
+Authorization: Bearer {{JWT}}
 
 ### update
-PUT http://localhost:8080/mercadoria/atualizar/1
+PUT http://localhost:8080/mercadoria/1/atualizar/1
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "id": 1,
@@ -36,8 +41,9 @@ Content-Type: application/json
 }
 
 ### delete
-DELETE http://localhost:8080/mercadoria/deletar/1
+DELETE http://localhost:8080/mercadoria/1/deletar/1
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "id": 1,

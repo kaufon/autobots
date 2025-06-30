@@ -1,17 +1,15 @@
 package com.autobots.automanager.controles;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 
 import com.autobots.automanager.entidades.Mercadoria;
-import com.autobots.automanager.repositorios.EmpresaRepository;
-import com.autobots.automanager.repositorios.MercadoriaRepository;
-import com.autobots.automanager.servicos.AdicionarLinkMercadoriaServico;
-import com.autobots.automanager.servicos.AtualizaMercadoriaServico;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,96 +18,116 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/mercadoria")
 public class MercadoriaController {
 
   @Autowired
-  private MercadoriaRepository mercadoriaRepository;
+  private RestTemplate restTemplate;
 
-  @Autowired
-  private AdicionarLinkMercadoriaServico adicionarLink;
+  @Value("${mercadoria.service.url}")
+  private String mercadoriaServiceUrl;
 
-  @Autowired
-  private EmpresaRepository empresRepository;
-
-  @Autowired
-  private AtualizaMercadoriaServico atualizaMercadoriaServico;
-
-  @PreAuthorize("hasRole('ADMIN') OR hasRole('GERENTE') OR hasRole('VENDEDOR')")
-  @GetMapping("{empresaID}/listar")
-    public ResponseEntity<List<Mercadoria>> listarMercadorias(@PathVariable Long empresaID) {
-    List<Mercadoria> mercadorias = mercadoriaRepository.findAll();
-    if (mercadorias.isEmpty()) {
-      return ResponseEntity.noContent().build();
-    }
-    adicionarLink.adicionarLink(new HashSet<>(mercadorias));
-    return ResponseEntity.ok(mercadorias);
+  private HttpHeaders createAuthHeaders(String authorizationHeader) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.set("Authorization", authorizationHeader);
+    return headers;
   }
 
-  @PreAuthorize("hasRole('ADMIN') OR hasRole('GERENTE') OR hasRole('VENDEDOR')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'VENDEDOR')")
+  @GetMapping("/{empresaID}/listar")
+  public ResponseEntity<List<Mercadoria>> listarMercadorias(@RequestHeader("Authorization") String authorizationHeader,
+      @PathVariable Long empresaID) {
+    String url = mercadoriaServiceUrl + "/mercadoria/{empresaID}/listar";
+    try {
+      HttpHeaders headers = createAuthHeaders(authorizationHeader);
+      HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+      ResponseEntity<List<Mercadoria>> resposta = restTemplate.exchange(
+          url, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Mercadoria>>() {
+          }, empresaID);
+
+      return resposta;
+    } catch (HttpClientErrorException e) {
+      return new ResponseEntity<>(e.getStatusCode());
+    }
+  }
+
+  @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'VENDEDOR')")
   @GetMapping("/{empresaID}/{id}")
-    public ResponseEntity<Mercadoria> obterMercadoria(@PathVariable Long empresaID, @PathVariable Long id) {
-    Optional<Mercadoria> mercadoria = mercadoriaRepository.findById(id);
-    if (mercadoria.isEmpty()) {
-      return ResponseEntity.notFound().build();
+  public ResponseEntity<Mercadoria> obterMercadoria(@RequestHeader("Authorization") String authorizationHeader,
+      @PathVariable Long empresaID, @PathVariable Long id) {
+    String url = mercadoriaServiceUrl + "/mercadoria/{empresaID}/{id}";
+    try {
+      HttpHeaders headers = createAuthHeaders(authorizationHeader);
+      HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+      ResponseEntity<Mercadoria> resposta = restTemplate.exchange(
+          url, HttpMethod.GET, requestEntity, Mercadoria.class, empresaID, id);
+
+      return resposta;
+    } catch (HttpClientErrorException e) {
+      return new ResponseEntity<>(e.getStatusCode());
     }
-    adicionarLink.adicionarLink(mercadoria.get());
-    return ResponseEntity.ok(mercadoria.get());
   }
 
-  @PreAuthorize("hasRole('ADMIN') OR hasRole('GERENTE')")
-  @PostMapping("{empresaID}/cadastro")
-  public ResponseEntity<?> criar(@RequestBody Mercadoria mercadoria,@PathVariable Long empresaID) {
-    var empresa = empresRepository.findById(empresaID).get();
-    mercadoriaRepository.save(mercadoria);
-    empresa.getMercadorias().add(mercadoria);
-    empresRepository.save(empresa);
-    return new ResponseEntity<>(HttpStatus.CREATED);
+  @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
+  @PostMapping("/{empresaID}/cadastro")
+  public ResponseEntity<?> criar(@RequestHeader("Authorization") String authorizationHeader,
+      @RequestBody Mercadoria mercadoria, @PathVariable Long empresaID) {
+    String url = mercadoriaServiceUrl + "/mercadoria/{empresaID}/cadastro";
+    try {
+      HttpHeaders headers = createAuthHeaders(authorizationHeader);
+      HttpEntity<Mercadoria> requestEntity = new HttpEntity<>(mercadoria, headers);
+
+      ResponseEntity<Void> resposta = restTemplate.exchange(
+          url, HttpMethod.POST, requestEntity, Void.class, empresaID);
+
+      return new ResponseEntity<>(resposta.getStatusCode());
+    } catch (HttpClientErrorException e) {
+      return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
+    }
   }
 
-  @PreAuthorize("hasRole('ADMIN') OR hasRole('GERENTE')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
   @PutMapping("/{empresaID}/atualizar/{id}")
-    public ResponseEntity<Mercadoria> atualizar(@PathVariable Long empresaID, @PathVariable Long id, @RequestBody Mercadoria novaMercadoria) {
-    Optional<Mercadoria> mercadoriaOptional = mercadoriaRepository.findById(id);
-    if (mercadoriaOptional.isEmpty()) {
-      return ResponseEntity.notFound().build();
+  public ResponseEntity<Mercadoria> atualizar(@RequestHeader("Authorization") String authorizationHeader,
+      @PathVariable Long empresaID, @PathVariable Long id, @RequestBody Mercadoria novaMercadoria) {
+    String url = mercadoriaServiceUrl + "/mercadoria/{empresaID}/atualizar/{id}";
+    try {
+      HttpHeaders headers = createAuthHeaders(authorizationHeader);
+      HttpEntity<Mercadoria> requestEntity = new HttpEntity<>(novaMercadoria, headers);
+
+      ResponseEntity<Mercadoria> resposta = restTemplate.exchange(
+          url, HttpMethod.PUT, requestEntity, Mercadoria.class, empresaID, id);
+
+      return resposta;
+    } catch (HttpClientErrorException e) {
+      return new ResponseEntity<>(e.getStatusCode());
     }
-
-    var empresa = empresRepository.findById(empresaID).get();
-  
-    Mercadoria mercadoria = mercadoriaOptional.get();
-
-    atualizaMercadoriaServico.atualizar(mercadoria, novaMercadoria);
-
-    Mercadoria atualizada = mercadoriaRepository.save(mercadoria);
-  
-    empresa.getMercadorias().remove(mercadoria);
-    empresa.getMercadorias().add(atualizada);
-    empresRepository.save(empresa);
-  
-    adicionarLink.adicionarLink(atualizada);
-    return ResponseEntity.ok(atualizada);
   }
 
-  @PreAuthorize("hasRole('ADMIN') OR hasRole('GERENTE')")
+  @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE')")
   @DeleteMapping("/{empresaID}/deletar/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long empresaID, @PathVariable Long id) {
-    Optional<Mercadoria> mercadoriaOptional = mercadoriaRepository.findById(id);
-    if (mercadoriaOptional.isEmpty()) {
-      return ResponseEntity.notFound().build();
+  public ResponseEntity<Void> deletar(@RequestHeader("Authorization") String authorizationHeader,
+      @PathVariable Long empresaID, @PathVariable Long id) {
+    String url = mercadoriaServiceUrl + "/mercadoria/{empresaID}/deletar/{id}";
+    try {
+      HttpHeaders headers = createAuthHeaders(authorizationHeader);
+      HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+
+      ResponseEntity<Void> resposta = restTemplate.exchange(
+          url, HttpMethod.DELETE, requestEntity, Void.class, empresaID, id);
+
+      return new ResponseEntity<>(resposta.getStatusCode());
+    } catch (HttpClientErrorException e) {
+      return new ResponseEntity<>(e.getStatusCode());
     }
-  
-    var empresa = empresRepository.findById(empresaID).get();
-  
-    Mercadoria mercadoria = mercadoriaOptional.get();
-    mercadoriaRepository.delete(mercadoria);
-    empresa.getMercadorias().remove(mercadoria);
-    empresRepository.save(empresa);
-  
-    return ResponseEntity.noContent().build();
   }
 }

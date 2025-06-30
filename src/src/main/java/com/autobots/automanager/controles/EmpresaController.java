@@ -32,7 +32,6 @@ public class EmpresaController {
   @Value("${empresa.service.url}")
   private String empresaServiceUrl;
 
-  // Helper para criar os cabeçalhos
   private HttpHeaders createAuthHeaders(String authorizationHeader) {
     HttpHeaders headers = new HttpHeaders();
     headers.set("Authorization", authorizationHeader);
@@ -44,7 +43,9 @@ public class EmpresaController {
       @RequestBody Empresa empresa) {
     String url = empresaServiceUrl + "/empresa/cadastrar";
     try {
+      System.out.println("auth header: " + authorizationHeader);
       HttpHeaders headers = createAuthHeaders(authorizationHeader);
+      System.out.println(headers);
       HttpEntity<Empresa> requestEntity = new HttpEntity<>(empresa, headers);
 
       ResponseEntity<Void> resposta = restTemplate.exchange(url, HttpMethod.POST, requestEntity, Void.class);
@@ -59,7 +60,10 @@ public class EmpresaController {
     String url = empresaServiceUrl + "/empresa/listar";
     try {
       HttpHeaders headers = createAuthHeaders(authorizationHeader);
+      System.out.println("auth header: " + authorizationHeader);
+      System.out.println("url: " + url);
       HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+      System.out.println("requestEntity: " + requestEntity);
 
       ResponseEntity<List<Empresa>> resposta = restTemplate.exchange(
           url,
@@ -67,6 +71,7 @@ public class EmpresaController {
           requestEntity, // Enviando a requisição com o cabeçalho
           new ParameterizedTypeReference<List<Empresa>>() {
           });
+      System.out.println("resposta: " + resposta);
       return resposta;
     } catch (HttpClientErrorException e) {
       if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -106,13 +111,13 @@ public class EmpresaController {
     }
   }
 
-  @DeleteMapping("/empresa/excluir/{id}")
+  @DeleteMapping("/empresa/excluir")
   public ResponseEntity<?> excluirEmpresa(@RequestHeader("Authorization") String authorizationHeader,
-      @PathVariable long id) {
-    String url = empresaServiceUrl + "/empresa/excluir/" + id;
+      @RequestBody Empresa empresaParaExcluir) {
+    String url = empresaServiceUrl + "/empresa/excluir";
     try {
       HttpHeaders headers = createAuthHeaders(authorizationHeader);
-      HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
+      HttpEntity<Empresa> requestEntity = new HttpEntity<>(empresaParaExcluir, headers);
 
       ResponseEntity<Void> resposta = restTemplate.exchange(url, HttpMethod.DELETE, requestEntity, Void.class);
       return new ResponseEntity<>(resposta.getStatusCode());

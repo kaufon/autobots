@@ -4,12 +4,12 @@ Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 {
-  "id": 1,
+  "id": 2,
   "razaoSocial": "Empresa 1",
   "nomeFantasia": "Empresa 1",
   "cadastro": "2025-01-01",
   "endereco": {
-    "id": 1,
+    "id": 3,
     "estado": "SP",
     "cidade": "São Paulo",
     "bairro": "Jardim Paulista",
@@ -20,8 +20,9 @@ Authorization: Bearer {{JWT}}
   },
   "telefones": [
     {
-      "id": 1,
-      "numero": "1234567898",
+      "id": 4,
+      "numero": "1234567892",
+      "ddd": "11"
     }
   ]
 }
@@ -31,23 +32,25 @@ GET http://localhost:8080/empresa/listar
 Authorization: Bearer {{JWT}}
 
 ### Obter um documento específico
-GET http://localhost:8080/empresa/1
+GET http://localhost:8080/empresa/3
 Authorization: Bearer {{JWT}}
 Content-Type: application/json
 
 ### Atualizar um documento
 PUT http://localhost:8080/empresa/atualizar
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
-  "id": 1,
+  "id": 3,
   "razaoSocial": "razaoSocial 321"
 }
 
 ### Excluir um documento
 DELETE http://localhost:8080/empresa/excluir
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
-  "id": 1
+  "id": 3
 }

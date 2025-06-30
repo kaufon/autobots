@@ -12,12 +12,18 @@ Authorization: Bearer {{JWT}}
 
 ### Obter todos os serviços
 GET http://localhost:8080/servico/listar
+Content-Type: application/json
+Authorization: Bearer {{JWT}}
+
 ### Obter um serviço específico
 GET http://localhost:8080/servico/1
+Content-Type: application/json 
+Authorization: Bearer {{JWT}}
 
 ### Atualizar um serviço
-PUT http://localhost:8080/servico/atualizar/1
+PUT http://localhost:8080/servico/1/atualizar/1
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "id": 1,
@@ -27,8 +33,9 @@ Content-Type: application/json
 }
 
 ### Excluir um servico
-DELETE http://localhost:8080/servico/deletar/1
+DELETE http://localhost:8080/servico/1/deletar/1
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "id": 1,
