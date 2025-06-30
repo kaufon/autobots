@@ -16,10 +16,6 @@ public class AdicionarLinkVendaServico implements AdicionarLinkServico<Venda> {
   public void adicionarLink(Set<Venda> clientes) {
     for (Venda cliente : clientes) {
       long id = cliente.getId();
-      Link linkProprio = WebMvcLinkBuilder
-          .linkTo(WebMvcLinkBuilder.methodOn(VendaController.class).obterVenda(id))
-          .withSelfRel();
-      cliente.add(linkProprio);
     }
   }
 

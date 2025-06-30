@@ -16,12 +16,12 @@ Content-Type: application/json
   },
   "mercadorias": [
     {
-      "id": 1
+      "id": 3
     }
   ],
   "servicos": [
     {
-      "id": 1
+      "id": 2
     }
   ]
 }
@@ -33,12 +33,13 @@ Authorization: Bearer {{JWT}}
 
 ### Obter uma venda específica
 
-GET http://localhost:8080/venda/1 HTTP/1.1
-
+GET http://localhost:8080/venda/4 HTTP/1.1
+Authorization: Bearer {{JWT}}
 ### Atualizar uma venda
 
-PUT http://localhost:8080/venda/atualizar/1 HTTP/1.1
+PUT http://localhost:8080/venda/atualizar/4 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
   "id": 1,
@@ -64,11 +65,12 @@ Content-Type: application/json
 
 ### Excluir uma venda
 
-DELETE http://localhost:8080/venda/excluir HTTP/1.1
+DELETE http://localhost:8080/venda/1/4 HTTP/1.1
 Content-Type: application/json
+Authorization: Bearer {{JWT}}
 
 {
-  "id": 1,
+  "id": 4,
   "cadastro": "2025-01-01",
   "identificacao": "1234567890",
   "cliente": {
