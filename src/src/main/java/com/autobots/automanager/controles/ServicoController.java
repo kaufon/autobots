@@ -59,16 +59,17 @@ public class ServicoController {
   }
 
   @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'VENDEDOR')")
-  @GetMapping("/listar")
-  public ResponseEntity<List<Servico>> listarServicos(@RequestHeader("Authorization") String authorizationHeader) {
-    String url = servicoServiceUrl + "/servico/listar";
+  @GetMapping("/{empresaID}/listar")
+  public ResponseEntity<List<Servico>> listarServicos(@RequestHeader("Authorization") String authorizationHeader,
+      @PathVariable Long empresaID) {
+    String url = servicoServiceUrl + "/servico/{empresaID}/listar";
     try {
       HttpHeaders headers = createAuthHeaders(authorizationHeader);
       HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
       ResponseEntity<List<Servico>> resposta = restTemplate.exchange(
           url, HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Servico>>() {
-          });
+          }, empresaID);
 
       return resposta;
     } catch (HttpClientErrorException e) {
@@ -77,16 +78,16 @@ public class ServicoController {
   }
 
   @PreAuthorize("hasAnyRole('ADMIN', 'GERENTE', 'VENDEDOR')")
-  @GetMapping("/{id}")
+  @GetMapping("/{empresaID}/{id}")
   public ResponseEntity<Servico> obterServico(@RequestHeader("Authorization") String authorizationHeader,
-      @PathVariable Long id) {
-    String url = servicoServiceUrl + "/servico/{id}";
+      @PathVariable Long empresaID, @PathVariable Long id) {
+    String url = servicoServiceUrl + "/servico/{empresaID}/{id}";
     try {
       HttpHeaders headers = createAuthHeaders(authorizationHeader);
       HttpEntity<Void> requestEntity = new HttpEntity<>(headers);
 
       ResponseEntity<Servico> resposta = restTemplate.exchange(
-          url, HttpMethod.GET, requestEntity, Servico.class, id);
+          url, HttpMethod.GET, requestEntity, Servico.class, empresaID, id);
 
       return resposta;
     } catch (HttpClientErrorException e) {

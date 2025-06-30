@@ -11,12 +11,12 @@ Authorization: Bearer {{JWT}}
 }
 
 ### Obter todos os serviços
-GET http://localhost:8080/servico/listar
+GET http://localhost:8080/servico/1/listar
 Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 ### Obter um serviço específico
-GET http://localhost:8080/servico/1
+GET http://localhost:8080/servico/1/1
 Content-Type: application/json 
 Authorization: Bearer {{JWT}}
 

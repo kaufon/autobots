@@ -32,7 +32,7 @@ GET http://localhost:8080/empresa/listar
 Authorization: Bearer {{JWT}}
 
 ### Obter um documento específico
-GET http://localhost:8080/empresa/3
+GET http://localhost:8080/empresa/2
 Authorization: Bearer {{JWT}}
 Content-Type: application/json
 
@@ -42,7 +42,7 @@ Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 {
-  "id": 3,
+  "id": 2,
   "razaoSocial": "razaoSocial 321"
 }
 
@@ -52,5 +52,5 @@ Content-Type: application/json
 Authorization: Bearer {{JWT}}
 
 {
-  "id": 3
+  "id": 2
 }
